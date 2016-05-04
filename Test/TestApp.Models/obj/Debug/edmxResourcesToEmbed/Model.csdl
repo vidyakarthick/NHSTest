@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TechTestModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="TechTestEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Colours" EntityType="TechTestModel.Colour" />
+    <EntitySet Name="People" EntityType="TechTestModel.Person" />
+    <AssociationSet Name="FavouriteColours" Association="TechTestModel.FavouriteColours">
+      <End Role="Colour" EntitySet="Colours" />
+      <End Role="Person" EntitySet="People" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Colour">
+    <Key>
+      <PropertyRef Name="ColourId" />
+    </Key>
+    <Property Name="ColourId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="People" Relationship="TechTestModel.FavouriteColours" FromRole="Colour" ToRole="Person" />
+  </EntityType>
+  <EntityType Name="Person">
+    <Key>
+      <PropertyRef Name="PersonId" />
+    </Key>
+    <Property Name="PersonId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="IsAuthorised" Type="Boolean" Nullable="false" />
+    <Property Name="IsValid" Type="Boolean" Nullable="false" />
+    <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="Colours" Relationship="TechTestModel.FavouriteColours" FromRole="Person" ToRole="Colour" />
+  </EntityType>
+  <Association Name="FavouriteColours">
+    <End Type="TechTestModel.Colour" Role="Colour" Multiplicity="*" />
+    <End Type="TechTestModel.Person" Role="Person" Multiplicity="*" />
+  </Association>
+</Schema>

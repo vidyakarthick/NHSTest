@@ -1,0 +1,62 @@
+﻿@using TwitterBootstrapMVC
+@using Test.Model
+
+
+<div ng-controller="PeopleController" >
+
+    @*<script type="text/ng-template" id="page1.html">*@
+<p>People List shown here</p>
+
+
+    <div id="PeopleTable">
+
+        @using(var table = Html.Bootstrap().Begin(new Table().Striped().HtmlAttributes(new { style = "table-layout: fixed; margin-top: 20px;", id = "TelephoneDirResults", @class = "TelephoneDirResults table-hover" })))
+        {
+            using(table.BeginRow())
+            {
+                <th>
+                    Name
+                </th>
+                <th>
+                    Authorised
+                </th>
+                <th>
+                    Enabled
+                </th>
+                <th style="width:30%;">
+                    Colours
+                </th>
+            }
+
+            <tr style="cursor:default;" ng-repeat="Entry in _People">
+
+                <td>
+                    <a ng-href="" style="width:480px;height:660px" ng-href="/Home/GetPeople()"> {{Entry.Person.FirstName}} {{Entry.Person.LastName}} </a>
+                </td>
+
+                <td ng-class="{RedClass: Entry.Person.IsAuthorised === false, GreenClass: Entry.Person.IsAuthorised === true  }">
+                    {{Entry.Person.IsAuthorised | yesNo }}
+                </td>
+
+                <td ng-class="{RedClass: Entry.Person.IsEnabled === false, GreenClass: Entry.Person.IsEnabled === true  }">
+                    {{Entry.Person.IsEnabled | yesNo }}
+                </td>
+
+                <td>
+                    @*@Html.DisplayFor(x => p.Colours)*@
+                    {{Entry.Colours}}
+                </td>
+
+            </tr>
+        }
+    </div>
+
+    @*</script>
+
+        <script type="text/ng-template" id="page2.html">
+            <h1>Page 2</h1>
+            <b>markup</b>
+        </script>*@
+
+
+</div>

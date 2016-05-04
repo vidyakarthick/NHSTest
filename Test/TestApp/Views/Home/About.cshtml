@@ -1,0 +1,193 @@
+﻿@using TwitterBootstrapMVC
+@using Test.App.Controllers
+
+@using Test.Model;
+@using Test.Model.Classes;
+@model Test.Model.Classes.PeopleViewModel
+
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<div ng-app="myApp">
+    <h1>Test ng view</h1>
+
+
+    <div ng-controller="PeopleController" ng-init="LoadPeople()">
+        <ng-view></ng-view>
+        @*ng-init="LoadPeople()">*@
+        @*<a href="/Home/Contact.cshtml">hiiii</a>*@
+
+        <script type="text/ng-template" id="page1.html">
+            <div id="PeopleTable">
+                People table must show here
+
+                @using(var table = Html.Bootstrap().Begin(new Table().Striped().HtmlAttributes(new { style = "table-layout: fixed; margin-top: 20px;", id = "TelephoneDirResults", @class = "TelephoneDirResults table-hover" })))
+                {
+                    using(table.BeginRow())
+                    {
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Authorised
+                        </th>
+                        <th>
+                            Enabled
+                        </th>
+                        <th style="width:30%;">
+                            Colours
+                        </th>
+                    }
+
+                    <tr style="cursor:default;" ng-repeat="Entry in _People">
+
+                        <td>
+                            <a ng-href="" style="width:480px;height:660px" data-personid="{{Entry.Person.PersonId}}" href="#/page2"> {{Entry.Person.FirstName}} {{Entry.Person.LastName}} </a>
+                        </td>
+
+                        <td ng-class="{RedClass: Entry.Person.IsAuthorised === false, GreenClass: Entry.Person.IsAuthorised === true  }">
+                            {{Entry.Person.IsAuthorised | yesNo }}
+                        </td>
+
+                        <td ng-class="{RedClass: Entry.Person.IsEnabled === false, GreenClass: Entry.Person.IsEnabled === true  }">
+                            {{Entry.Person.IsEnabled | yesNo }}
+                        </td>
+
+                        <td>
+                            @*@Html.DisplayFor(x => p.Colours)*@
+                            {{Entry.Colours}}
+                        </td>
+
+                    </tr>
+                }
+
+            </div>
+
+        </script>
+
+        <script type="text/ng-template" id="page2.html">
+            <h1>Page 2</h1>
+            <b>Person Details must show here</b>
+        </script>
+
+
+    </div>
+
+</div>
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @*Javascript fix for IE8 & older*@
+    <!--[if lt IE 9]>
+          <script src="~/Scripts/IE8Fix.js"></script>
+    <![endif]-->
+
+    <script src="~/Scripts/angular1216.js" type="text/javascript"></script>
+    <script src="~/Scripts/angular-resource.js" type="text/javascript"></script>
+    <script src="~/Scripts/angular-route.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+            $( document ).ready( function ()
+            {
+                //  GetPeople();
+            } );
+
+            var myApp = angular.module( 'myApp', ['ngRoute',  'ngResource'] );
+
+            myApp.config( ['$routeProvider', function ( $routeProvider )
+            {
+                $routeProvider.when( '/page1', {
+
+                    templateUrl: "page1.html"
+
+
+                } ).when( '/page2', {
+
+                    templateUrl: "page2.html"
+
+
+                } ).otherwise( {
+
+                    redirectTo: 'page1'
+
+                } );
+            }] );
+
+            myApp.filter( 'yesNo', function ()
+            {
+                return function ( input )
+                {
+                    return input ? 'Yes' : 'No';
+                }
+            } );
+
+            myApp.controller( 'PeopleController', ['$scope', function ( $scope )
+            {
+                $scope._People = [];
+                $scope.LoadPeople = function ()
+                {
+                    //  $scope.loading = true;
+                    setTimeout( function ()
+                    {
+                        $scope._People = GetPeople();
+                        $scope.$apply();
+                        setTimeout( function ()
+                        {
+                            $scope.$apply();
+                        }, 5 );
+                    }, 5 );
+                };
+
+                $scope.GetPersonDetails = function ( personid )
+                {
+                    $( "#PeopleTable" ).hide();
+                    $( "#PersonDetails" ).show();
+                    $scope.Person = GetPerson( personid );
+                }
+
+            }] );
+
+            function GetPerson( personid )
+            {
+                var Person = [];
+                $.ajax( {
+                    cache: false,
+                    type: "POST",
+                    url: "@Url.Action("GetPerson", "Home")",
+                    data: { 'personid': personid },
+                    async: false,
+                    success: function ( response )
+                    {
+                        console.log( response );
+                        DataSet = response;
+                    }
+                } );
+                return DataSet;
+            }
+
+
+            function GetPeople()
+            {
+                var DataSet = [];
+                $.ajax( {
+                    cache: false,
+                    type: "POST",
+                    url: "@Url.Action("GetPeople", "Home")",
+                    data: {},
+                    async: false,
+                    success: function ( response )
+                    {
+                        console.log( response );
+                        DataSet = response;
+                    }
+                } );
+                return DataSet;
+            }
+
+
+    </script>
+}

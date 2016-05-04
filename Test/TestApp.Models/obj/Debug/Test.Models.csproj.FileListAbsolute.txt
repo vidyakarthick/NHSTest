@@ -1,0 +1,9 @@
+C:\Temp\TestApp\TestApp.Models\bin\Test.Models.dll.config
+C:\Temp\TestApp\TestApp.Models\bin\Test.Models.dll
+C:\Temp\TestApp\TestApp.Models\bin\Test.Models.pdb
+C:\Temp\TestApp\TestApp.Models\bin\EntityFramework.dll
+C:\Temp\TestApp\TestApp.Models\bin\EntityFramework.SqlServer.dll
+C:\Temp\TestApp\TestApp.Models\bin\EntityFramework.xml
+C:\Temp\TestApp\TestApp.Models\bin\EntityFramework.SqlServer.xml
+C:\Temp\TestApp\TestApp.Models\obj\Debug\Test.Models.dll
+C:\Temp\TestApp\TestApp.Models\obj\Debug\Test.Models.pdb

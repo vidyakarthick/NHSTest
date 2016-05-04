@@ -1,0 +1,317 @@
+﻿@using TwitterBootstrapMVC
+@using Test.App.Controllers
+@using Test.Model;
+@using Test.Model.Classes;
+@model Test.Model.Classes.PeopleViewModel
+
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<div ng-app="myApp">
+   
+    <div ng-controller="PeopleController" ng-init="LoadPeople()">
+        <ng-view></ng-view>
+
+        <script type="text/ng-template" id="PeopleList.html">
+            <div id="PeopleTable">
+
+                @using(var table = Html.Bootstrap().Begin(new Table().Striped().HtmlAttributes(new { style = "table-layout: fixed; margin-top: 20px;", id = "PeopleList", @class = "table-hover" })))
+                {
+                    using (table.BeginRow())
+                    {
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Palindrome
+                        </th>
+                        <th>
+                            Authorised
+                        </th>
+                        <th>
+                            Enabled
+                        </th>
+                        <th style="width:30%;">
+                            Colours
+                        </th>
+                    }
+
+                    <tr style="cursor:default;" ng-repeat="Entry in _People">
+
+                        <td>
+                            <a ng-href="" style="width:480px;height:660px" data-personid="{{Entry.Person.PersonId}}" href="#/Person/{{Entry.Person.PersonId}}"> {{Entry.Person.FirstName}} {{Entry.Person.LastName}} </a>
+                        </td>
+                        <td ng-style="{'color':{{Entry.Person.FirstName + Entry.Person.LastName | Palindrome}} ?'green':'red'}">
+                            {{Entry.Person.FirstName + Entry.Person.LastName | Palindrome | yesNo}}
+                        </td>
+
+                        <td ng-class="{RedClass: Entry.Person.IsAuthorised === false, GreenClass: Entry.Person.IsAuthorised === true  }">
+                            {{Entry.Person.IsAuthorised | yesNo }}
+                        </td>
+
+                        <td ng-class="{RedClass: Entry.Person.IsEnabled === false, GreenClass: Entry.Person.IsEnabled === true  }">
+                            {{Entry.Person.IsEnabled | yesNo }}
+                        </td>
+
+                        <td>
+                            {{Entry.Colours}}
+                        </td>
+                    </tr>
+                }
+
+            </div>
+        </script>
+    </div>
+
+    <script type="text/ng-template" id="PersonDetails.html">
+        <div ng-controller="PersonController" ng-init="GetPerson()">
+            
+            <div>
+                <h1>Update {{_PersonColours.Person.FirstName}} {{_PersonColours.Person.LastName}}  </h1>
+                <br />
+                <b>User Details</b>
+                <hr />
+                <div class ="middle details">
+                    <div> <label class="lbl" ng-click="chk($event); _PersonColours.Person.IsAuthorised = !_PersonColours.Person.IsAuthorised"> <span>Authorised </span></label>  <input type="checkbox" name="authorised" ng-if="_PersonColours.Person.IsAuthorised" ng-model="_PersonColours.Person.IsAuthorised" />  </div>
+                    <div><label class="lbl" ng-click="chk($event); _PersonColours.Person.IsEnabled = !_PersonColours.Person.IsEnabled"> <span> Enabled </span></label> <input type="checkbox" ng-if="_PersonColours.Person.IsEnabled" ng-model="_PersonColours.Person.IsEnabled" />  </div>
+                </div>
+            </div>
+                
+            <div>
+                <div> <b>Favourite Colours</b></div>
+                <hr />
+
+                <div ng-repeat="item in AllColours">
+                    <div class="middle">
+                        <label><span> {{item.value}} </span> <input type="checkbox" style="display:none;" checkbox-group /></label>
+                    </div>
+                </div>
+            </div>
+
+            <div style =" margin-right :50%; margin-left:25%; width :240px;">
+                <button style ="display:inline; width: 120px;" type="button" id="Save" class="btn btn-primary" ng-click="SaveChanges();">Save Changes</button>
+                <button style="display:inline-block; width: 100px;" type="button" id="Cancel" class="btn" ng-click="GoToPeople();">Cancel</button>
+            </div>        
+        </div>
+    </script>
+
+</div>
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/angular1216.js" type="text/javascript"></script>
+    <script src="~/Scripts/angular-resource.js" type="text/javascript"></script>
+    <script src="~/Scripts/angular-route.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+        $(document)
+            .ready(function() {
+
+            });
+
+        var myApp = angular.module('myApp', ['ngRoute', 'ngResource']);
+
+        myApp.config([
+            '$routeProvider', function($routeProvider, $routeParams) {
+                $routeProvider.when('/People',
+                    {
+                        templateUrl: "PeopleList.html"
+
+
+                    })
+                    .when('/Person',
+                    {
+                        templateUrl: "PersonDetails.html"
+
+
+                    })
+                    .when('/Person/:personid',
+                    {
+                        templateUrl: "PersonDetails.html"
+
+
+                    })
+                    .otherwise({
+                        redirectTo: 'People'
+
+                    });
+            }
+        ]);
+
+        myApp.filter('Palindrome',
+            function() {
+                return function(input) {
+                    var triminput = angular.lowercase(input.split('').join(''));
+                    return triminput == angular.lowercase(input.split('').reverse().join(''));
+                }
+            });
+
+        myApp.filter('yesNo',
+            function() {
+                return function(input) {
+                    return input ? 'Yes' : 'No';
+                }
+            });
+
+        myApp.controller('PeopleController',
+        [
+            '$scope', function($scope, $filter, $routeParams) {
+                $scope._People = [];
+                $scope._Person = [];
+                $scope._PersonColours = [];
+                $scope.LoadPeople = function() {
+                    $scope._People = GetPeople();
+                };
+            }
+        ]);
+
+        myApp.controller('PersonController',
+        [
+            '$scope', '$routeParams', '$location', function($scope, $routeParams, $location) {
+                $scope.GetPerson = function() {
+                    $scope._PersonColours = GetPerson($routeParams.personid);
+                    $scope.ColoursOnLoad = [];
+                    angular.forEach($scope._PersonColours.Colours,
+                        function(value) {
+                            this.push(value.Name);
+                        },
+                        $scope.ColoursOnLoad);
+
+                    $scope.ColoursCopy = angular.copy($scope.ColoursOnLoad);
+
+                    $scope.AllColours = [
+                        { "id": 1, "value": "Red" }, { "id": 2, "value": "Green" }, { "id": 3, "value": "Blue" }
+                    ];
+                };
+
+                $scope.GoToPeople = function() {
+                    $location.path("#/People");
+                };
+
+                $scope.chk = function($event) {
+                    var el = $event.target;
+                    angular.element(el).closest('div').find('[type = checkbox]').toggleClass('check');
+                }
+
+                $scope.SaveChanges = function() {
+                    SubmitChanges($scope._PersonColours, $location);
+                };
+            }
+        ]);
+
+        function SubmitChanges(personcolours, location) {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "@Url.Action("SaveChanges", "Home")",
+                data: { 'personcolours': personcolours },
+                async: false,
+                success: function(response) {
+                    if (response.err != '') {
+                        alert(response.err);
+                    } else {
+                        location.path('#/People');
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+
+        myApp.directive("checkboxGroup",
+            function() {
+                return {
+                    restrict: "A",
+                    link: function(scope, elem, attrs) {
+                        // Determine initial checked boxes
+                        angular.forEach(scope._PersonColours.Colours,
+                            function(value) {
+                                if (value.ColourId === scope.item.id) {
+                                    angular.element(elem[0]).show();
+                                    elem[0].checked = true;
+                                }
+                            });
+
+                        // Update scope on click
+                        elem.bind('click',
+                            function() {
+                                var index = scope.ColoursOnLoad.indexOf(scope.item.value);
+                                // Add if checked
+                                if (elem[0].checked) {
+                                    if (index === -1) {
+                                        scope.ColoursOnLoad.push(scope.item.value);
+                                        scope._PersonColours.Colours
+                                            .push({
+                                                "ColourId": scope.item.id,
+                                                "Name": scope.item.value,
+                                                "IsEnabled": true,
+                                                "People": []
+                                            });
+                                        angular.element(elem[0]).show();
+                                    }
+                                }
+                                // Remove if unchecked
+                                else {
+                                    if (index !== -1) {
+                                        scope.ColoursOnLoad.splice(index, 1);
+                                        scope._PersonColours.Colours.splice(index, 1);
+                                        angular.element(elem[0]).hide();
+                                    }
+                                }
+                                // Sort and update DOM display
+                                scope.$apply(scope.ColoursOnLoad.sort(function(a, b) {
+                                    return a - b;
+                                }));
+                            });
+                    }
+                }
+            });
+
+        function GetPerson(personid) {
+            var Person = [];
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "@Url.Action("GetPerson", "Home")",
+                data: { 'personid': personid },
+                async: false,
+                success: function(response) {
+                    if (response.err == '') {
+                        Person = response.vm;
+                    } else {
+                        alert(response.err);
+                    }
+                }
+            });
+            return Person;
+        }
+
+        function GetPeople() {
+            var DataSet = [];
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "@Url.Action("GetPeople", "Home")",
+                data: {},
+                async: false,
+                success: function ( response )
+                {
+                    if ( response.err == '' )
+                    {
+                          DataSet = response.data;
+                    } else
+                    {
+                        alert( response.err );
+                    }
+                  
+                }
+            });
+            return DataSet;
+        }
+
+
+    </script>
+}
