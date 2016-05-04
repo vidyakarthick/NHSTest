@@ -17,3 +17,13 @@ C:\Temp\Test\TestApp.Models\bin\EntityFramework.SqlServer.xml
 C:\Temp\Test\TestApp.Models\obj\Debug\Test.Model.dll
 C:\Temp\Test\TestApp.Models\obj\Debug\Test.Model.pdb
 C:\Temp\Test\TestApp.Models\obj\Debug\Test.Model.csprojResolveAssemblyReference.cache
+E:\Leeds\Test\TestApp.Models\bin\Test.Model.dll.config
+E:\Leeds\Test\TestApp.Models\bin\Test.Model.dll
+E:\Leeds\Test\TestApp.Models\bin\Test.Model.pdb
+E:\Leeds\Test\TestApp.Models\bin\EntityFramework.dll
+E:\Leeds\Test\TestApp.Models\bin\EntityFramework.SqlServer.dll
+E:\Leeds\Test\TestApp.Models\bin\EntityFramework.xml
+E:\Leeds\Test\TestApp.Models\bin\EntityFramework.SqlServer.xml
+E:\Leeds\Test\TestApp.Models\obj\Debug\Test.Model.csprojResolveAssemblyReference.cache
+E:\Leeds\Test\TestApp.Models\obj\Debug\Test.Model.dll
+E:\Leeds\Test\TestApp.Models\obj\Debug\Test.Model.pdb
